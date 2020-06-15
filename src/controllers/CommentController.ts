@@ -1,14 +1,6 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
 
-interface IComment{
-  id: number;
-  message: string;
-  user_id: number;
-  post_id: number,
-  date: string;
-}
-
 class CommentController{
 
   async create(request: Request, response: Response){
@@ -25,16 +17,21 @@ class CommentController{
 
     if(authorization){
 
-      const post: IComment = await trx('post')
+      const post = await trx('posts')
       .where('id', post_id)
       .first();
 
       if(post){
         await trx('comment').insert(dataComment);
+        trx.commit();
+        return response.json({ success: true });
+      }else{
+        return response.json({ message: "This post not exists to you comment."});
       }
+
+    }else{
+      return response.json({ message: "You not authencated."});
     }
-    trx.commit();
-    return response.json({ success: true });
   }
 
 }
