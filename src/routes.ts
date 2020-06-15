@@ -15,9 +15,11 @@ routes.put('/post/:id', postController.update);
 routes.delete('/post/:id', postController.delete);
 
 // Comment Routes
-routes.post('/comment', commentController.create);
 routes.get('/comment/:post_id', commentController.index);
-routes.put('/comment/:post_id/:comment_id', commentController.update);
+routes.post('/comment', commentController.create);
+routes.get('/comment/:post_id/:comment_id', commentController.show);
+routes.put('/comment/:comment_id', commentController.update);
+routes.delete('/comment/:comment_id', commentController.delete);
 
 
 export default routes;
