@@ -1,6 +1,14 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
 
+interface IComment{
+  id: number;
+  message: string;
+  user_id: number;
+  post_id: number;
+  date: string;
+}
+
 class CommentController{
 
   async create(request: Request, response: Response){
@@ -62,6 +70,38 @@ class CommentController{
     .first();
 
     return response.json(comment)
+
+  }
+
+  async update(request: Request, response: Response){
+
+    const { authorization } = request.headers;
+    const { post_id, comment_id } = request.params;
+    const { message } = request.body;
+
+    if(authorization){
+      const comment: IComment = await knex('comment')
+      .where('post_id', post_id)
+      .andWhere('id', comment_id)
+      .first();
+
+      if(comment.user_id === parseInt(authorization)){
+
+        await knex('comment')
+        .where('id', comment.id)
+        .andWhere('user_id', authorization)
+        .update({
+          message
+        });
+
+        return response.json({ success: true });
+      }else{
+        return response.json({ message: "This comment not your, so you can not update." })
+      }
+
+    }else{
+      return response.json({ message: "User unauthorized." });
+    }
 
   }
 
