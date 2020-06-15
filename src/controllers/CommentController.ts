@@ -113,11 +113,10 @@ class CommentController{
       
       const commentDel: IComment = await knex('comment')
       .where('id', comment_id)
-      .andWhere('user_id', authorization)
       .first();
 
 
-      if(commentDel && commentDel.user_id === parseInt(authorization)){
+      if(commentDel.user_id === parseInt(authorization)){
 
         await knex('comment')
         .where('id', commentDel.id)
