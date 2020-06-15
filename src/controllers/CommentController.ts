@@ -13,17 +13,14 @@ class CommentController{
       post_id
     }
 
-    const trx = await knex.transaction();
-
     if(authorization){
 
-      const post = await trx('posts')
+      const post = await knex('posts')
       .where('id', post_id)
       .first();
 
       if(post){
-        await trx('comment').insert(dataComment);
-        trx.commit();
+        await knex('comment').insert(dataComment);
         return response.json({ success: true });
       }else{
         return response.json({ message: "This post not exists to you comment."});
