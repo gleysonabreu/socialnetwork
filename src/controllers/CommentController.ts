@@ -43,7 +43,26 @@ class CommentController{
     'users.firstname', 'users.lastname', 'users.photo', 'users.username'
     );
 
-    return response.json({ comments });
+    return response.json(comments);
+  }
+
+  async show(request: Request, response: Response){
+
+    const { post_id, comment_id } = request.params;
+
+    const comment = await knex('comment')
+    .innerJoin('users', function(){
+      this.on('comment.user_id', 'users.id')
+    })
+    .where('comment.post_id', post_id)
+    .andWhere('comment.id', comment_id)
+    .select('comment.id', 'comment.message', 'comment.date',
+    'users.firstname', 'users.lastname', 'users.photo', 'users.username'
+    )
+    .first();
+
+    return response.json(comment)
+
   }
 
 }
