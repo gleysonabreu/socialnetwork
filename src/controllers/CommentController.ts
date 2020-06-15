@@ -31,6 +31,21 @@ class CommentController{
     }
   }
 
+  async index(request: Request, response: Response){
+    const { post_id } = request.params;
+
+    const comments = await knex('comment')
+    .innerJoin('users', function() {
+      this.on('comment.user_id', 'users.id')
+    })
+    .where('post_id', post_id)
+    .select('comment.id', 'comment.message', 'comment.date',
+    'users.firstname', 'users.lastname', 'users.photo', 'users.username'
+    );
+
+    return response.json({ comments });
+  }
+
 }
 
 export default CommentController;
