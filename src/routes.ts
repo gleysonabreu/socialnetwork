@@ -16,6 +16,7 @@ routes.delete('/post/:id', postController.delete);
 
 // Comment Routes
 routes.post('/comment', commentController.create);
+routes.get('/comment', commentController.index);
 
 
 export default routes;
