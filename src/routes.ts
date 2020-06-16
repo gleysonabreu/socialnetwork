@@ -3,11 +3,13 @@ import { Router } from 'express';
 import PostController from './controllers/PostController';
 import CommentController from './controllers/CommentController';
 import CommentLikeController from './controllers/CommentLikeController';
+import PostLikeController from './controllers/PostLikeController';
 
 const routes = Router();
 const postController = new PostController();
 const commentController = new CommentController();
 const commentLikeController = new CommentLikeController();
+const postLikeController = new PostLikeController();
 
 // Posts Routes
 routes.get('/post', postController.index);
@@ -26,7 +28,12 @@ routes.delete('/comment/:comment_id', commentController.delete);
 // Comment Like Route
 routes.post('/comment/like', commentLikeController.create);
 routes.get('/comment/like/listall/:comment_id', commentLikeController.index);
-routes.delete('/comment/like/delete', commentLikeController.delete);
+routes.delete('/comment/like/delete/:comment_id', commentLikeController.delete);
+
+// Post Like Routes
+routes.post('/post/like', postLikeController.create);
+routes.get('/post/like/:post_id', postLikeController.index);
+routes.delete('/post/like/:post_id', postLikeController.delete);
 
 
 export default routes;

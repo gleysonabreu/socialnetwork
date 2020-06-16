@@ -1,51 +1,57 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
 
-class CommentLikeController{
+class PostLikeController{
+
   async create(request: Request, response: Response){
+
     const { authorization } = request.headers;
-    const { comment_id } = request.body;
+    const { post_id } = request.body;
 
     const dataLike = {
       user_id: authorization,
-      comment_id
+      post_id
     }
 
-    if(authorization){
-      await knex('comment_like').insert(dataLike);
+    if( authorization ){
+
+      await knex('post_like').insert(dataLike);
 
       return response.json({ success: true });
 
     }else{
-      return response.json({ message: "Unauthenticated user." });
+      return response.status(400).json({ message: "Unauthenticated user." })
     }
+
   }
 
   async index(request: Request, response: Response){
-    const { comment_id } = request.params;
 
-    const allLikes = await knex('comment_like')
+    const { post_id } = request.params;
+
+    const listAllLikes = await knex('post_like')
     .innerJoin('users', function(){
-      this.on('comment_like.user_id', '=', 'users.id')
+      this.on('post_like.user_id', '=', 'users.id')
     })
-    .select('comment_like.user_id', 'comment_like.comment_id', 'comment_like.date',
+    .select('post_like.user_id', 'post_like.post_id', 'post_like.date',
     'users.firstname', 'users.lastname', 'users.photo', 'users.username'
     )
-    .where('comment_like.comment_id', comment_id);
+    .where('post_like.post_id', post_id);
 
-    return response.json(allLikes);
+    return response.json(listAllLikes);
 
   }
 
   async delete(request: Request, response: Response){
+
     const { authorization } = request.headers;
-    const { comment_id } = request.params;
+    const { post_id } = request.params;
 
     if( authorization ){
 
-      await knex('comment_like')
+      await knex('post_like')
       .where('user_id', authorization)
-      .andWhere('comment_id', comment_id)
+      .andWhere('post_id', post_id)
       .del();
 
       return response.json({ success: true });
@@ -53,8 +59,9 @@ class CommentLikeController{
     }else{
       return response.status(400).json({ message: "Unauthenticated user." });
     }
+
   }
 
 }
 
-export default CommentLikeController;
+export default PostLikeController;
