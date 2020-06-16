@@ -17,7 +17,7 @@ class CommentLikeController{
       return response.json({ success: true });
 
     }else{
-      return response.json({ message: "Unathenticated user." });
+      return response.json({ message: "Unauthenticated user." });
     }
   }
 }

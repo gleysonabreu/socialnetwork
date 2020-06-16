@@ -93,13 +93,13 @@ class PostController {
         .update({
           message
         });
-        return response.json({ message: "Post updated." })
+        return response.json({ message: "Updated post." })
       }else{
         return response.status(400).json({ message: "This post not your, so you can not update." });
       }
 
     }else{
-      return response.json({ message: "User not authencated." })
+      return response.json({ message: "Unauthenticated user." })
     }
 
   }
@@ -143,7 +143,7 @@ class PostController {
         response.status(200).json({ message: 'Post deleted.' });
       
       }else{
-        response.status(400).json({ message: 'This post not your, so you can not delete.' });
+        response.status(400).json({ message: 'This post is not yours, so you can not delete it.' });
       }
 
       trx.commit();

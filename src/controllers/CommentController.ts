@@ -31,11 +31,11 @@ class CommentController{
         await knex('comment').insert(dataComment);
         return response.json({ success: true });
       }else{
-        return response.json({ message: "This post not exists to you comment."});
+        return response.json({ message: "This post does not exists for you to comment."});
       }
 
     }else{
-      return response.json({ message: "You not authencated."});
+      return response.json({ message: "You are not authenticated."});
     }
   }
 
@@ -95,7 +95,7 @@ class CommentController{
 
         return response.json({ success: true });
       }else{
-        return response.json({ message: "This comment not your, so you can not update it." })
+        return response.json({ message: "This comment is not yours, so you cannot update it." })
       }
 
     }else{
@@ -125,11 +125,11 @@ class CommentController{
 
         return response.json({ success: true });
       }else{
-        return response.json({ message: "This comment not your, so you cannot delete it." });
+        return response.json({ message: "This comment is not yours, so you cannot delete it." });
       }
 
     }else{
-      return response.json({ message: "User not authenticated." });
+      return response.json({ message: "Unauthenticated user." });
     }
 
 
