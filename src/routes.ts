@@ -25,6 +25,7 @@ routes.delete('/comment/:comment_id', commentController.delete);
 
 // Comment Like Route
 routes.post('/comment/like', commentLikeController.create);
+routes.delete('/comment/like/delete', commentLikeController.delete);
 
 
 export default routes;
