@@ -21,6 +21,22 @@ class CommentLikeController{
     }
   }
 
+  async index(request: Request, response: Response){
+    const { comment_id } = request.params;
+
+    const allLikes = await knex('comment_like')
+    .innerJoin('users', function(){
+      this.on('comment_like.user_id', '=', 'users.id')
+    })
+    .select('comment_like.user_id', 'comment_like.comment_id', 'comment_like.date',
+    'users.firstname', 'users.lastname', 'users.photo', 'users.username'
+    )
+    .where('comment_like.comment_id', comment_id);
+
+    return response.json(allLikes);
+
+  }
+
   async delete(request: Request, response: Response){
     const { authorization } = request.headers;
     const { comment_id } = request.body;
