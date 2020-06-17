@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import celebrate from 'celebrate';
 
 import PostController from './controllers/PostController';
 import CommentController from './controllers/CommentController';
