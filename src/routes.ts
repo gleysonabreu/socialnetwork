@@ -5,6 +5,7 @@ import CommentController from './controllers/CommentController';
 import CommentLikeController from './controllers/CommentLikeController';
 import PostLikeController from './controllers/PostLikeController';
 import FollowerController from './controllers/FollowerController';
+import SessionController from './controllers/SessionController';
 
 const routes = Router();
 const postController = new PostController();
@@ -12,6 +13,7 @@ const commentController = new CommentController();
 const commentLikeController = new CommentLikeController();
 const postLikeController = new PostLikeController();
 const followerController = new FollowerController();
+const sessionController = new SessionController();
 
 // Posts Routes
 routes.get('/post', postController.index);
@@ -42,6 +44,9 @@ routes.delete('/post/like/:post_id', postLikeController.delete);
 routes.post('/followers/:user_following', followerController.create);
 routes.get('/followers/:user_follower', followerController.index);
 routes.delete('/followers/:user_following', followerController.delete);
+
+// Session routes
+routes.post('/session', sessionController.create);
 
 
 export default routes;
