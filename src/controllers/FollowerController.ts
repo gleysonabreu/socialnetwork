@@ -1,26 +1,37 @@
+require('dotenv/config');
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import knex from '../database/connection';
+
+interface IToken{
+  data: {
+    id: number;
+  }
+}
 
 class FollowerController{
 
   async create(request: Request, response: Response){
 
     const { authorization } = request.headers;
+    const tokenAuth = authorization?.split(' ')[1] || '';
     const { user_following } = request.params;
 
-    const dataFollower = {
-      user_follower: authorization,
-      user_following
-    }
+    try {
 
-    if( authorization ){
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY || '');
+      
+      const dataFollower = {
+        user_follower: decodedToken.data.id,
+        user_following
+      }
 
       await knex('followers').insert(dataFollower);
 
       return response.json({ success: true });
 
-    }else{
-      return response.status(400).json({ message: "Unauthenticated user." })
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
 
   }
@@ -45,19 +56,22 @@ class FollowerController{
   async delete(request: Request, response: Response){
 
     const { authorization } = request.headers;
+    const tokenAuth = authorization?.split(' ')[1] ||'';
     const { user_following } = request.params;
 
-    if( authorization ){
+    try {
+
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY || '');
 
       await knex('followers')
-      .where('user_follower', authorization)
+      .where('user_follower', decodedToken.data.id)
       .andWhere('user_following', user_following)
       .del();
 
       return response.json({ success: true });
-
-    }else{
-      return response.status(400).json({ message: "Unauthenticated user." })
+      
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
 
   }
