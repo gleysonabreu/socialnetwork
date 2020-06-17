@@ -1,4 +1,6 @@
+require('dotenv/config');
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import knex from '../database/connection';
 
 interface IComment{
@@ -9,19 +11,28 @@ interface IComment{
   date: string;
 }
 
+interface IToken{
+  data: {
+    id: number;
+  }
+}
+
 class CommentController{
 
   async create(request: Request, response: Response){
     const { authorization } = request.headers;
+    const tokenAuth = authorization?.split(' ')[1] || '';
     const { message, post_id } = request.body;
 
-    const dataComment = {
-      message,
-      user_id: authorization,
-      post_id
-    }
+    try {
 
-    if(authorization){
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY||'');
+
+      const dataComment = {
+        message,
+        user_id: decodedToken.data.id,
+        post_id
+      }
 
       const post = await knex('posts')
       .where('id', post_id)
@@ -31,12 +42,13 @@ class CommentController{
         await knex('comment').insert(dataComment);
         return response.json({ success: true });
       }else{
-        return response.json({ message: "This post does not exists for you to comment."});
+        return response.json({ message: "This post does not exist for you to comment."});
       }
-
-    }else{
-      return response.json({ message: "You are not authenticated."});
+      
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
+    
   }
 
   async index(request: Request, response: Response){
@@ -76,19 +88,23 @@ class CommentController{
   async update(request: Request, response: Response){
 
     const { authorization } = request.headers;
+    const tokenAuth = authorization?.split(' ')[1] || '';
     const { comment_id } = request.params;
     const { message } = request.body;
 
-    if(authorization){
+    try {
+      
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY||'');
+      
       const comment: IComment = await knex('comment')
       .where('id', comment_id)
       .first();
 
-      if(comment.user_id === parseInt(authorization)){
+      if(comment.user_id === decodedToken.data.id){
 
         await knex('comment')
         .where('id', comment.id)
-        .andWhere('user_id', authorization)
+        .andWhere('user_id', decodedToken.data.id)
         .update({
           message
         });
@@ -98,8 +114,8 @@ class CommentController{
         return response.json({ message: "This comment is not yours, so you cannot update it." })
       }
 
-    }else{
-      return response.json({ message: "User unauthorized." });
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
 
   }
@@ -107,31 +123,33 @@ class CommentController{
   async delete(request: Request, response: Response) {
     
     const { authorization } = request.headers;
+    const tokenAuth = authorization?.split(' ')[1] || '';
     const { comment_id } = request.params;
 
-    if(authorization){
-      
+    try {
+
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY||'');
+
       const commentDel: IComment = await knex('comment')
       .where('id', comment_id)
       .first();
 
 
-      if(commentDel.user_id === parseInt(authorization)){
+      if(commentDel.user_id === decodedToken.data.id){
 
         await knex('comment')
         .where('id', commentDel.id)
-        .andWhere('user_id', commentDel.user_id)
+        .andWhere('user_id', decodedToken.data.id)
         .del();
 
         return response.json({ success: true });
       }else{
         return response.json({ message: "This comment is not yours, so you cannot delete it." });
       }
-
-    }else{
-      return response.json({ message: "Unauthenticated user." });
+      
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
-
 
   }
 
