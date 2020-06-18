@@ -164,9 +164,33 @@ routes.delete('/post/like/:post_id', celebrate({
 
 
 // Followers routes
-routes.post('/followers/:user_following', followerController.create);
-routes.get('/followers/:user_follower', followerController.index);
-routes.delete('/followers/:user_following', followerController.delete);
+routes.post('/followers/:user_following', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    user_following: Joi.number().required()
+  })
+}), followerController.create);
+routes.get('/followers/:user_follower', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    user_follower: Joi.number().required()
+  })
+}), followerController.index);
+routes.delete('/followers/:user_following', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    user_following: Joi.number().required()
+  })
+}), followerController.delete);
 
 // Session routes
 routes.post('/session', sessionController.create);
