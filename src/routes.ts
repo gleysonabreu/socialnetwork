@@ -64,11 +64,53 @@ routes.delete('/post/:id', celebrate({
 }), postController.delete);
 
 // Comment Routes
-routes.get('/comment/:post_id', commentController.index);
-routes.post('/comment', commentController.create);
-routes.get('/comment/:post_id/:comment_id', commentController.show);
-routes.put('/comment/:comment_id', commentController.update);
-routes.delete('/comment/:comment_id', commentController.delete);
+routes.get('/comment/:post_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), commentController.index);
+routes.post('/comment', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    message: Joi.string().required(),
+    post_id: Joi.number().required()
+  })
+}), commentController.create);
+routes.get('/comment/:post_id/:comment_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    post_id: Joi.number().required(),
+    comment_id: Joi.number().required()
+  })
+}), commentController.show);
+routes.put('/comment/:comment_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    comment_id: Joi.number().required()
+  })
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    message: Joi.string().required()
+  })
+}), commentController.update);
+routes.delete('/comment/:comment_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    comment_id: Joi.number().required()
+  })
+}), commentController.delete);
 
 // Comment Like Route
 routes.post('/comment/like', commentLikeController.create);
