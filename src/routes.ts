@@ -138,9 +138,29 @@ routes.delete('/comment/like/delete/:comment_id', celebrate({
 }), commentLikeController.delete);
 
 // Post Like Routes
-routes.post('/post/like', postLikeController.create);
-routes.get('/post/like/:post_id', postLikeController.index);
-routes.delete('/post/like/:post_id', postLikeController.delete);
+routes.post('/post/like', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    post_id: Joi.number().required()
+  })
+}), postLikeController.create);
+routes.get('/post/like/:post_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), postLikeController.index);
+routes.delete('/post/like/:post_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    post_id: Joi.number().required()
+  })
+}), postLikeController.delete);
 
 
 // Followers routes
