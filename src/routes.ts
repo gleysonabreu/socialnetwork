@@ -113,9 +113,29 @@ routes.delete('/comment/:comment_id', celebrate({
 }), commentController.delete);
 
 // Comment Like Route
-routes.post('/comment/like', commentLikeController.create);
-routes.get('/comment/like/listall/:comment_id', commentLikeController.index);
-routes.delete('/comment/like/delete/:comment_id', commentLikeController.delete);
+routes.post('/comment/like', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    comment_id: Joi.number().required()
+  })
+}), commentLikeController.create);
+routes.get('/comment/like/listall/:comment_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), commentLikeController.index);
+routes.delete('/comment/like/delete/:comment_id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    comment_id: Joi.number().required()
+  })
+}), commentLikeController.delete);
 
 // Post Like Routes
 routes.post('/post/like', postLikeController.create);
