@@ -159,6 +159,10 @@ routes.get('/post/like/:post_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
   }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    post_id: Joi.number().required()
+  })
 }), postLikeController.index);
 routes.delete('/post/like/:post_id', celebrate({
   [Segments.HEADERS]: Joi.object({
