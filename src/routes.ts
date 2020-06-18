@@ -68,6 +68,10 @@ routes.get('/comment/:post_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
   }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    post_id: Joi.number().required()
+  })
 }), commentController.index);
 routes.post('/comment', celebrate({
   [Segments.HEADERS]: Joi.object({
