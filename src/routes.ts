@@ -130,6 +130,10 @@ routes.get('/comment/like/listall/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
   }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    comment_id: Joi.number().required()
+  })
 }), commentLikeController.index);
 routes.delete('/comment/like/delete/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
