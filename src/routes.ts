@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import celebrate from 'celebrate';
+import { celebrate, Segments, Joi } from 'celebrate';
 
 import PostController from './controllers/PostController';
 import CommentController from './controllers/CommentController';
@@ -17,11 +17,51 @@ const followerController = new FollowerController();
 const sessionController = new SessionController();
 
 // Posts Routes
-routes.get('/post', postController.index);
-routes.post('/post', postController.create);
-routes.get('/post/:id', postController.show);
-routes.put('/post/:id', postController.update);
-routes.delete('/post/:id', postController.delete);
+routes.get('/post', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), postController.index);
+routes.post('/post', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    message: Joi.string().required()
+  })
+}), postController.create);
+routes.get('/post/:id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  })
+}), postController.show);
+routes.put('/post/:id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  })
+}), celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    message: Joi.string().required()
+  })
+}), postController.update);
+routes.delete('/post/:id', celebrate({
+  [Segments.HEADERS]: Joi.object({
+    authorization: Joi.string().required()
+  }).unknown()
+}), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  })
+}), postController.delete);
 
 // Comment Routes
 routes.get('/comment/:post_id', commentController.index);
