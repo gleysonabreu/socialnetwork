@@ -207,7 +207,12 @@ routes.delete('/followers/:user_following', celebrate({
 }), followerController.delete);
 
 // Session routes
-routes.post('/session', sessionController.create);
+routes.post('/session', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    login: Joi.string().required(),
+    password: Joi.string().required()
+  })
+}), sessionController.create);
 
 // User Routes
 routes.post('/users', userController.create);
