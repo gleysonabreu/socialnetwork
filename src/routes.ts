@@ -7,6 +7,7 @@ import CommentLikeController from './controllers/CommentLikeController';
 import PostLikeController from './controllers/PostLikeController';
 import FollowerController from './controllers/FollowerController';
 import SessionController from './controllers/SessionController';
+import UserController from './controllers/UserController';
 
 const routes = Router();
 const postController = new PostController();
@@ -15,6 +16,7 @@ const commentLikeController = new CommentLikeController();
 const postLikeController = new PostLikeController();
 const followerController = new FollowerController();
 const sessionController = new SessionController();
+const userController = new UserController();
 
 // Posts Routes
 routes.get('/post', celebrate({
@@ -206,6 +208,9 @@ routes.delete('/followers/:user_following', celebrate({
 
 // Session routes
 routes.post('/session', sessionController.create);
+
+// User Routes
+routes.post('/users', userController.create);
 
 
 export default routes;
