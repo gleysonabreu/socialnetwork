@@ -13,14 +13,14 @@ class App{
   }
 
   private middlewares(){
+    this.config.use(helmet())
     this.config.use(cors());
-    this.config.use(helmet());
     this.config.use(express.json());
-    this.config.use(errors());
   }
 
   private routes(){
     this.config.use(Routes);
+    this.config.use(errors());
   }
 }
 
