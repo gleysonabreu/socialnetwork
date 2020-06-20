@@ -1,29 +1,29 @@
-import { Router } from 'express'
-import { celebrate, Segments, Joi } from 'celebrate'
+import { Router } from 'express';
+import { celebrate, Segments, Joi } from 'celebrate';
 
-import PostController from '@controllers/PostController'
-import CommentController from '@controllers/CommentController'
-import CommentLikeController from '@controllers/CommentLikeController'
-import PostLikeController from '@controllers/PostLikeController'
-import FollowerController from '@controllers/FollowerController'
-import SessionController from '@controllers/SessionController'
-import UserController from '@controllers/UserController'
+import PostController from '@controllers/PostController';
+import CommentController from '@controllers/CommentController';
+import CommentLikeController from '@controllers/CommentLikeController';
+import PostLikeController from '@controllers/PostLikeController';
+import FollowerController from '@controllers/FollowerController';
+import SessionController from '@controllers/SessionController';
+import UserController from '@controllers/UserController';
 
-const routes = Router()
-const postController = new PostController()
-const commentController = new CommentController()
-const commentLikeController = new CommentLikeController()
-const postLikeController = new PostLikeController()
-const followerController = new FollowerController()
-const sessionController = new SessionController()
-const userController = new UserController()
+const routes = Router();
+const postController = new PostController();
+const commentController = new CommentController();
+const commentLikeController = new CommentLikeController();
+const postLikeController = new PostLikeController();
+const followerController = new FollowerController();
+const sessionController = new SessionController();
+const userController = new UserController();
 
 // Posts Routes
 routes.get('/post', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
   }).unknown()
-}), postController.index)
+}), postController.index);
 routes.post('/post', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -32,7 +32,7 @@ routes.post('/post', celebrate({
   [Segments.BODY]: Joi.object().keys({
     message: Joi.string().required()
   })
-}), postController.create)
+}), postController.create);
 routes.get('/post/:id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -41,7 +41,7 @@ routes.get('/post/:id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     id: Joi.number().required()
   })
-}), postController.show)
+}), postController.show);
 routes.put('/post/:id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -54,7 +54,7 @@ routes.put('/post/:id', celebrate({
   [Segments.BODY]: Joi.object().keys({
     message: Joi.string().required()
   })
-}), postController.update)
+}), postController.update);
 routes.delete('/post/:id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -63,7 +63,7 @@ routes.delete('/post/:id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     id: Joi.number().required()
   })
-}), postController.delete)
+}), postController.delete);
 
 // Comment Routes
 routes.get('/comment/:post_id', celebrate({
@@ -74,7 +74,7 @@ routes.get('/comment/:post_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     post_id: Joi.number().required()
   })
-}), commentController.index)
+}), commentController.index);
 routes.post('/comment', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -84,7 +84,7 @@ routes.post('/comment', celebrate({
     message: Joi.string().required(),
     post_id: Joi.number().required()
   })
-}), commentController.create)
+}), commentController.create);
 routes.get('/comment/:post_id/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -94,7 +94,7 @@ routes.get('/comment/:post_id/:comment_id', celebrate({
     post_id: Joi.number().required(),
     comment_id: Joi.number().required()
   })
-}), commentController.show)
+}), commentController.show);
 routes.put('/comment/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -107,7 +107,7 @@ routes.put('/comment/:comment_id', celebrate({
   [Segments.BODY]: Joi.object().keys({
     message: Joi.string().required()
   })
-}), commentController.update)
+}), commentController.update);
 routes.delete('/comment/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -116,7 +116,7 @@ routes.delete('/comment/:comment_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     comment_id: Joi.number().required()
   })
-}), commentController.delete)
+}), commentController.delete);
 
 // Comment Like Route
 routes.post('/comment/like', celebrate({
@@ -127,7 +127,7 @@ routes.post('/comment/like', celebrate({
   [Segments.BODY]: Joi.object().keys({
     comment_id: Joi.number().required()
   })
-}), commentLikeController.create)
+}), commentLikeController.create);
 routes.get('/comment/like/listall/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -136,7 +136,7 @@ routes.get('/comment/like/listall/:comment_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     comment_id: Joi.number().required()
   })
-}), commentLikeController.index)
+}), commentLikeController.index);
 routes.delete('/comment/like/delete/:comment_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -145,7 +145,7 @@ routes.delete('/comment/like/delete/:comment_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     comment_id: Joi.number().required()
   })
-}), commentLikeController.delete)
+}), commentLikeController.delete);
 
 // Post Like Routes
 routes.post('/post/like', celebrate({
@@ -156,7 +156,7 @@ routes.post('/post/like', celebrate({
   [Segments.BODY]: Joi.object().keys({
     post_id: Joi.number().required()
   })
-}), postLikeController.create)
+}), postLikeController.create);
 routes.get('/post/like/:post_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -165,7 +165,7 @@ routes.get('/post/like/:post_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     post_id: Joi.number().required()
   })
-}), postLikeController.index)
+}), postLikeController.index);
 routes.delete('/post/like/:post_id', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -174,7 +174,7 @@ routes.delete('/post/like/:post_id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     post_id: Joi.number().required()
   })
-}), postLikeController.delete)
+}), postLikeController.delete);
 
 // Followers routes
 routes.post('/followers/:user_following', celebrate({
@@ -185,7 +185,7 @@ routes.post('/followers/:user_following', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     user_following: Joi.number().required()
   })
-}), followerController.create)
+}), followerController.create);
 routes.get('/followers/:user_follower', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -194,7 +194,7 @@ routes.get('/followers/:user_follower', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     user_follower: Joi.number().required()
   })
-}), followerController.index)
+}), followerController.index);
 routes.delete('/followers/:user_following', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required()
@@ -203,7 +203,7 @@ routes.delete('/followers/:user_following', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     user_following: Joi.number().required()
   })
-}), followerController.delete)
+}), followerController.delete);
 
 // Session routes
 routes.post('/session', celebrate({
@@ -211,9 +211,9 @@ routes.post('/session', celebrate({
     login: Joi.string().required(),
     password: Joi.string().required()
   })
-}), sessionController.create)
+}), sessionController.create);
 
 // User Routes
-routes.post('/users', userController.create)
+routes.post('/users', userController.create);
 
-export default routes
+export default routes;
