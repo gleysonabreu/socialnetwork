@@ -1,7 +1,7 @@
 require('dotenv/config');
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import knex from '../database/connection';
+import knex from '@database/connection';
 
 interface IToken{
   data: {

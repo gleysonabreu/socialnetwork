@@ -1,6 +1,6 @@
 require('dotenv/config');
 import {Request, Response} from 'express';
-import knex from '../database/connection';
+import knex from '@database/connection';
 import bcrypt, { genSalt } from 'bcrypt';
 
 interface IUser{
