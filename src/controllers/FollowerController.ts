@@ -1,7 +1,8 @@
-require('dotenv/config');
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import knex from '@database/connection';
+
+require('dotenv/config');
 
 interface IToken{
   data: {
@@ -9,73 +10,59 @@ interface IToken{
   }
 }
 
-class FollowerController{
-
-  async create(request: Request, response: Response){
-
+class FollowerController {
+  create = async (request: Request, response: Response) => {
     const { authorization } = request.headers;
-    const tokenAuth = authorization?.split(' ')[1] || '';
-    const { user_following } = request.params;
+    const tokenAuth = authorization.split(' ')[1];
+    const { userFollowing } = request.params;
 
     try {
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY);
 
-      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY || '');
-      
       const dataFollower = {
         user_follower: decodedToken.data.id,
-        user_following
-      }
-
+        user_following: userFollowing,
+      };
       await knex('followers').insert(dataFollower);
 
       return response.json({ success: true });
-
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      return response.status(400).json({ message: 'Invalid token.' });
     }
-
   }
 
-  async index(request: Request, response: Response){
-
-    const { user_follower } = request.params;
+  index = async (request: Request, response: Response) => {
+    const { userFollower } = request.params;
 
     const users = await knex('followers')
-    .innerJoin('users', function(){
-      this.on('followers.user_following', '=', 'users.id')
-    })
-    .select('followers.user_follower', 'followers.user_following', 'followers.date',
-    'users.firstname', 'users.lastname', 'users.username', 'users.photo'
-    )
-    .where('user_follower', user_follower);
+      .innerJoin('users', function user() {
+        this.on('followers.user_following', '=', 'user.id');
+      })
+      .select('followers.user_follower', 'followers.user_following', 'followers.date',
+        'users.firstname', 'users.lastname', 'users.username', 'users.photo')
+      .where('followers.user_follower', userFollower);
 
-    return response.json(users)
-
+    return response.json(users);
   }
 
-  async delete(request: Request, response: Response){
-
+  delete = async (request: Request, response: Response) => {
     const { authorization } = request.headers;
-    const tokenAuth = authorization?.split(' ')[1] ||'';
-    const { user_following } = request.params;
+    const tokenAuth = authorization.split(' ')[1];
+    const { userFollowing } = request.params;
 
     try {
-
-      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY || '');
+      const decodedToken = <IToken>jwt.verify(tokenAuth, process.env.SECRET_KEY);
 
       await knex('followers')
-      .where('user_follower', decodedToken.data.id)
-      .andWhere('user_following', user_following)
-      .del();
+        .where('user_follower', decodedToken.data.id)
+        .andWhere('user_following', userFollowing)
+        .del();
 
       return response.json({ success: true });
-      
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      return response.status(400).json({ message: 'Invalid token.' });
     }
-
   }
-
 }
 
 export default FollowerController;
