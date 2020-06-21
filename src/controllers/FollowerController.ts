@@ -36,7 +36,7 @@ class FollowerController {
 
     const users = await knex('followers')
       .innerJoin('users', function user() {
-        this.on('followers.user_following', '=', 'user.id');
+        this.on('followers.user_following', '=', 'users.id');
       })
       .select('followers.user_follower', 'followers.user_following', 'followers.date',
         'users.firstname', 'users.lastname', 'users.username', 'users.photo')
