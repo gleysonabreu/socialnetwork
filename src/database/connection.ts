@@ -1,8 +1,9 @@
-require('dotenv/config');
-import knex from 'knex';
+import knex from "knex";
+
+require("dotenv/config");
 
 const connection = knex({
-  client: 'pg',
+  client: "pg",
   connection: process.env.PG_CONNECTION,
   useNullAsDefault: true,
 });

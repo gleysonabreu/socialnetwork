@@ -1,24 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import Routes from './routes';
-import { errors } from 'celebrate';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import { errors } from "celebrate";
+import Routes from "./routes";
 
 class App {
   config: express.Application;
-  constructor () {
+
+  constructor() {
     this.config = express();
     this.middlewares();
     this.routes();
   }
 
-  private middlewares () {
+  private middlewares() {
     this.config.use(helmet());
     this.config.use(cors());
     this.config.use(express.json());
   }
 
-  private routes () {
+  private routes() {
     this.config.use(Routes);
     this.config.use(errors());
   }
