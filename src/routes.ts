@@ -125,25 +125,25 @@ routes.post('/comment/like', celebrate({
   }).unknown(),
 }), celebrate({
   [Segments.BODY]: Joi.object().keys({
-    comment_id: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), commentLikeController.create);
-routes.get('/comment/like/listall/:comment_id', celebrate({
+routes.get('/comment/like/listall/:commentId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    comment_id: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), commentLikeController.index);
-routes.delete('/comment/like/delete/:comment_id', celebrate({
+routes.delete('/comment/like/delete/:commentId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    comment_id: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), commentLikeController.delete);
 
