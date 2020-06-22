@@ -154,25 +154,25 @@ routes.post('/post/like', celebrate({
   }).unknown(),
 }), celebrate({
   [Segments.BODY]: Joi.object().keys({
-    post_id: Joi.number().required(),
+    postId: Joi.number().required(),
   }),
 }), postLikeController.create);
-routes.get('/post/like/:post_id', celebrate({
+routes.get('/post/like/:postId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    post_id: Joi.number().required(),
+    postId: Joi.number().required(),
   }),
 }), postLikeController.index);
-routes.delete('/post/like/:post_id', celebrate({
+routes.delete('/post/like/:postId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    post_id: Joi.number().required(),
+    postId: Joi.number().required(),
   }),
 }), postLikeController.delete);
 
