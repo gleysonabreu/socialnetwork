@@ -66,13 +66,13 @@ routes.delete('/post/:id', celebrate({
 }), postController.delete);
 
 // Comment Routes
-routes.get('/comment/:post_id', celebrate({
+routes.get('/comment/:postId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    post_id: Joi.number().required(),
+    postId: Joi.number().required(),
   }),
 }), commentController.index);
 routes.post('/comment', celebrate({
@@ -82,39 +82,39 @@ routes.post('/comment', celebrate({
 }), celebrate({
   [Segments.BODY]: Joi.object().keys({
     message: Joi.string().required(),
-    post_id: Joi.number().required(),
+    postId: Joi.number().required(),
   }),
 }), commentController.create);
-routes.get('/comment/:post_id/:comment_id', celebrate({
+routes.get('/comment/:postId/:commentId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    post_id: Joi.number().required(),
-    comment_id: Joi.number().required(),
+    postId: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), commentController.show);
-routes.put('/comment/:comment_id', celebrate({
+routes.put('/comment/:commentId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    comment_id: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), celebrate({
   [Segments.BODY]: Joi.object().keys({
     message: Joi.string().required(),
   }),
 }), commentController.update);
-routes.delete('/comment/:comment_id', celebrate({
+routes.delete('/comment/:commentId', celebrate({
   [Segments.HEADERS]: Joi.object({
     authorization: Joi.string().required(),
   }).unknown(),
 }), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    comment_id: Joi.number().required(),
+    commentId: Joi.number().required(),
   }),
 }), commentController.delete);
 
