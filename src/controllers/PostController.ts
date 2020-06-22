@@ -26,7 +26,7 @@ interface IToken {
 }
 
 class PostController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { message } = request.body;
@@ -49,7 +49,7 @@ class PostController {
     }
   };
 
-  index = async (request: Request, response: Response) => {
+  index = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
 
@@ -85,7 +85,7 @@ class PostController {
     }
   };
 
-  show = async (request: Request, response: Response) => {
+  show = async (request: Request, response: Response): Promise<Response> => {
     const { id } = request.params;
 
     try {
@@ -112,7 +112,7 @@ class PostController {
     }
   };
 
-  update = async (request: Request, response: Response) => {
+  update = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { id } = request.params;
@@ -135,7 +135,7 @@ class PostController {
     }
   };
 
-  delete = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { id } = request.params;

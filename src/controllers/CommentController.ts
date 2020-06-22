@@ -21,7 +21,7 @@ interface IToken {
 }
 
 class CommentController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { message, postId } = request.body;
@@ -51,7 +51,7 @@ class CommentController {
     }
   };
 
-  index = async (request: Request, response: Response) => {
+  index = async (request: Request, response: Response): Promise<Response> => {
     const { postId } = request.params;
 
     const comments = await knex("comment")
@@ -72,7 +72,7 @@ class CommentController {
     return response.json(comments);
   };
 
-  show = async (request: Request, response: Response) => {
+  show = async (request: Request, response: Response): Promise<Response> => {
     const { postId, commentId } = request.params;
     const comment = await knex("comment")
       .innerJoin("users", function commentUsers() {
@@ -95,7 +95,7 @@ class CommentController {
     return response.json(comment);
   };
 
-  update = async (request: Request, response: Response) => {
+  update = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { commentId } = request.params;
@@ -125,7 +125,7 @@ class CommentController {
     }
   };
 
-  delete = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { commentId } = request.params;

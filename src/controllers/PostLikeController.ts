@@ -11,7 +11,7 @@ interface IToken {
 }
 
 class PostLikeController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { postId } = request.body;
@@ -32,7 +32,7 @@ class PostLikeController {
     }
   };
 
-  index = async (request: Request, response: Response) => {
+  index = async (request: Request, response: Response): Promise<Response> => {
     const { postId } = request.params;
 
     const listAllLikes = await knex("post_like")
@@ -53,7 +53,7 @@ class PostLikeController {
     return response.json(listAllLikes);
   };
 
-  delete = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { postId } = request.params;

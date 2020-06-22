@@ -11,7 +11,7 @@ interface IToken {
 }
 
 class FollowerController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { userFollowing } = request.params;
@@ -33,7 +33,7 @@ class FollowerController {
     }
   };
 
-  index = async (request: Request, response: Response) => {
+  index = async (request: Request, response: Response): Promise<Response> => {
     const { userFollower } = request.params;
 
     const users = await knex("followers")
@@ -54,7 +54,7 @@ class FollowerController {
     return response.json(users);
   };
 
-  delete = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { userFollowing } = request.params;

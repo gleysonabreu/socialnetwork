@@ -15,7 +15,7 @@ interface IUser {
 }
 
 class SessionController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { login, password } = request.body;
 
     const user: IUser = await knex("users")

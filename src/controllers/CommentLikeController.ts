@@ -10,7 +10,7 @@ interface IToken {
   };
 }
 class CommentLikeController {
-  create = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { commentId } = request.body;
@@ -31,7 +31,7 @@ class CommentLikeController {
     }
   };
 
-  index = async (request: Request, response: Response) => {
+  index = async (request: Request, response: Response): Promise<Response> => {
     const { commentId } = request.params;
 
     const allLikes = await knex("comment_like")
@@ -52,7 +52,7 @@ class CommentLikeController {
     return response.json(allLikes);
   };
 
-  delete = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { commentId } = request.params;
