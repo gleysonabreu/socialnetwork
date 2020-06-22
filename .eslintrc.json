@@ -55,5 +55,12 @@
       "@typescript-eslint/explicit-module-boundary-types": ["warn", {
         "allowArgumentsExplicitlyTypedAsAny": true
       }]
+  },
+  "settings": {
+    "import/resolver":{
+      "node": {
+        "extensions": [".ts", ".tsx"]
+      }
+    }
   }
 }
