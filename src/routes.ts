@@ -9,6 +9,7 @@ import PostLikeController from "@controllers/PostLikeController";
 import FollowerController from "@controllers/FollowerController";
 import SessionController from "@controllers/SessionController";
 import UserController from "@controllers/UserController";
+import UploadController from "@controllers/UploadController";
 import multerConfig from "@config/multer";
 
 const routes = Router();
@@ -19,6 +20,7 @@ const postLikeController = new PostLikeController();
 const followerController = new FollowerController();
 const sessionController = new SessionController();
 const userController = new UserController();
+const uploadController = new UploadController();
 
 // Posts Routes
 routes.get(
@@ -360,6 +362,18 @@ routes.put(
     }),
   }),
   userController.update
+);
+
+// Routes Upload
+routes.post(
+  "/uploads",
+  celebrate({
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required(),
+    }).unknown(),
+  }),
+  multer(multerConfig).single("file"),
+  uploadController.create
 );
 
 export default routes;
