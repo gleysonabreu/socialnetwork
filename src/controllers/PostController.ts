@@ -62,6 +62,9 @@ class PostController {
         .innerJoin("users", function postUser() {
           this.on("posts.user_id", "=", "users.id");
         })
+        .leftJoin("post_image", function images() {
+          this.on("posts.id", "post_image.post_id");
+        })
         .whereIn("posts.user_id", function postUserIn() {
           this.select("user_following")
             .from("followers")
@@ -72,6 +75,17 @@ class PostController {
           "posts.message",
           "posts.date",
           "users.id as user_id",
+          "users.firstname",
+          "users.lastname",
+          "users.username",
+          "users.photo",
+          knex.raw("string_agg(post_image.url, ',') as images")
+        )
+        .groupBy(
+          "posts.id",
+          "posts.message",
+          "posts.date",
+          "users.id",
           "users.firstname",
           "users.lastname",
           "users.username",
@@ -90,10 +104,6 @@ class PostController {
 
     try {
       const post = await knex("posts")
-        .innerJoin("users", function postUser() {
-          this.on("posts.user_id", "users.id");
-        })
-        .where("posts.id", "=", id)
         .select(
           "posts.id",
           "posts.message",
@@ -102,13 +112,31 @@ class PostController {
           "users.firstname",
           "users.lastname",
           "users.username",
-          "users.photo"
+          "users.photo",
+          knex.raw("string_agg(post_image.url, ',') as images")
+        )
+        .innerJoin("users", function postUser() {
+          this.on("posts.user_id", "users.id");
+        })
+        .leftJoin("post_image", function images() {
+          this.on("posts.id", "post_image.post_id");
+        })
+        .where("posts.id", "=", id)
+        .groupBy(
+          "posts.id",
+          "posts.message",
+          "posts.date",
+          "users.firstname",
+          "users.lastname",
+          "users.username",
+          "users.photo",
+          "users.id"
         )
         .first();
 
       return response.json(post);
     } catch (error) {
-      return response.status(400).json({ messgae: "Invalid token." });
+      return response.status(400).json({ message: "Invalid token." });
     }
   };
 
