@@ -66,7 +66,7 @@ class UploadController {
         jwt.verify(tokenAuth, process.env.SECRET_KEY)
       );
       const updatePic = {
-        url: url || key,
+        photo: url || key,
       };
 
       await knex("users").where("id", decodedToken.data.id).update(updatePic);
