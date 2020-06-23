@@ -366,7 +366,7 @@ routes.put(
 
 // Routes Upload
 routes.post(
-  "/uploads",
+  "/uploads/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
