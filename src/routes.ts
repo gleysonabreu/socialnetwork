@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
+import multer from "multer";
 
 import PostController from "@controllers/PostController";
 import CommentController from "@controllers/CommentController";
@@ -8,6 +9,7 @@ import PostLikeController from "@controllers/PostLikeController";
 import FollowerController from "@controllers/FollowerController";
 import SessionController from "@controllers/SessionController";
 import UserController from "@controllers/UserController";
+import multerConfig from "@config/multer";
 
 const routes = Router();
 const postController = new PostController();

@@ -17,6 +17,7 @@ class App {
     this.config.use(helmet());
     this.config.use(cors());
     this.config.use(express.json());
+    this.config.use(express.urlencoded({ extended: true }));
   }
 
   private routes() {
