@@ -366,14 +366,25 @@ routes.put(
 
 // Routes Upload
 routes.post(
-  "/uploads/:postId",
+  "/uploads/post/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
     }).unknown(),
   }),
   multer(multerConfig).single("file"),
-  uploadController.create
+  uploadController.addPhotoPost
+);
+
+routes.post(
+  "/uploads/user",
+  celebrate({
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required(),
+    }).unknown(),
+  }),
+  multer(multerConfig).single("file"),
+  uploadController.updatePicture
 );
 
 export default routes;

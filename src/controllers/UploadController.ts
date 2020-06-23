@@ -16,7 +16,10 @@ interface IPost {
   user_id: number;
 }
 class UploadController {
-  create = async (request: Request, response: Response): Promise<Response> => {
+  addPhotoPost = async (
+    request: Request,
+    response: Response
+  ): Promise<Response> => {
     const { authorization } = request.headers;
     const tokenAuth = authorization.split(" ")[1];
     const { key, location: url = "" } = request.file;
@@ -47,6 +50,29 @@ class UploadController {
       return response.json({ success: true });
     } catch (error) {
       return response.json({ message: "Invalid token." });
+    }
+  };
+
+  updatePicture = async (
+    request: Request,
+    response: Response
+  ): Promise<Response> => {
+    const { authorization } = request.headers;
+    const tokenAuth = authorization.split(" ")[1];
+    const { key, location: url } = request.file;
+
+    try {
+      const decodedToken = <IToken>(
+        jwt.verify(tokenAuth, process.env.SECRET_KEY)
+      );
+      const updatePic = {
+        url: url || key,
+      };
+
+      await knex("users").where("id", decodedToken.data.id).update(updatePic);
+      return response.json({ success: true });
+    } catch (error) {
+      return response.status(400).json({ message: "Invalid token." });
     }
   };
 }
