@@ -8,7 +8,8 @@
     "rootDir": "./",                         
     "removeComments": true,                
     "typeRoots": [
-      "./node_modules/@types"
+      "./node_modules/@types",
+      "./src/@types"
     ],
     "esModuleInterop": true,                  
     "resolveJsonModule": true,
@@ -19,7 +20,9 @@
     "baseUrl": ".",
     "paths": {
       "@controllers/*": ["./src/controllers/*"],
-      "@database/*": ["./src/database/*"]
+      "@database/*": ["./src/database/*"],
+      "@config/*": ["./src/configs/*"],
+      "@routes/*": ["./src/routes/*"]
     }
   }
 }

@@ -1,35 +1,36 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
-
-require("dotenv/config");
-
-interface IToken {
-  data: {
-    id: number;
-  };
-}
+import AppError from "../AppError";
 
 class FollowerController {
-  create = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  create = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { userFollowing } = request.params;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+      const user = await knex("users").where("id", userFollowing).first();
+      const followers = await knex("followers")
+        .where("user_follower", id)
+        .andWhere("user_following", userFollowing)
+        .first();
+
+      if (!user) throw new AppError("User does not exist.");
+
+      if (followers) throw new AppError("You are already following this user");
 
       const dataFollower = {
-        user_follower: decodedToken.data.id,
+        user_follower: id,
         user_following: userFollowing,
       };
       await knex("followers").insert(dataFollower);
 
-      return response.json({ success: true });
+      return response.json({ message: "You are following this user." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 
@@ -54,24 +55,35 @@ class FollowerController {
     return response.json(users);
   };
 
-  delete = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  delete = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { userFollowing } = request.params;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+      const followers = await knex("followers")
+        .where("user_follower", id)
+        .andWhere("user_following", userFollowing)
+        .first();
+
+      if (!followers)
+        throw new AppError(
+          "You are not following this user to stop following him."
+        );
 
       await knex("followers")
-        .where("user_follower", decodedToken.data.id)
+        .where("user_follower", id)
         .andWhere("user_following", userFollowing)
         .del();
 
-      return response.json({ success: true });
+      return response.json({
+        message: "You are no longer following this user.",
+      });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 }
