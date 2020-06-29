@@ -2,6 +2,7 @@ import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
 import CommentController from "@controllers/CommentController";
 import CommentLikeController from "@controllers/CommentLikeController";
+import checkJWT from "../validations/CheckJWT";
 
 const commentRoutes = Router();
 const commentController = new CommentController();
@@ -14,6 +15,7 @@ commentRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
@@ -28,6 +30,7 @@ commentRoutes.post(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       message: Joi.string().required(),
@@ -43,6 +46,7 @@ commentRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
@@ -58,6 +62,7 @@ commentRoutes.put(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),
@@ -77,6 +82,7 @@ commentRoutes.delete(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),
@@ -92,6 +98,7 @@ commentRoutes.post(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       commentId: Joi.number().required(),
@@ -106,6 +113,7 @@ commentRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),
@@ -120,6 +128,7 @@ commentRoutes.delete(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),

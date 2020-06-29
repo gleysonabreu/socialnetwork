@@ -1,33 +1,37 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import knex from "@database/connection";
+import AppError from "../AppError";
 
-require("dotenv/config");
-
-interface IToken {
-  data: {
-    id: number;
-  };
-}
 class CommentLikeController {
-  create = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  create = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { commentId } = request.body;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+      const comment = await knex("comment").where("id", commentId).first();
+      const commentLike = await knex("comment_like")
+        .where("comment_id", commentId)
+        .andWhere("user_id", id)
+        .first();
+
+      if (!comment)
+        throw new AppError("This comment doesn't exist, so you can't like it.");
+
+      if (commentLike) throw new AppError("You already liked that.");
       const dataLike = {
-        user_id: decodedToken.data.id,
+        user_id: id,
         comment_id: commentId,
       };
 
       await knex("comment_like").insert(dataLike);
-      return response.json({ success: true });
+      return response.json({ message: "Liked comment." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 
@@ -52,24 +56,30 @@ class CommentLikeController {
     return response.json(allLikes);
   };
 
-  delete = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  delete = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { commentId } = request.params;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+      const commentLike = await knex("comment_like")
+        .where("user_id", id)
+        .andWhere("comment_id", commentId)
+        .first();
+
+      if (!commentLike) throw new AppError("You didn't like that.");
 
       await knex("comment_like")
-        .where("user_id", decodedToken.data.id)
+        .where("user_id", id)
         .andWhere("comment_id", commentId)
         .del();
 
-      return response.json({ success: true });
+      return response.json({ messgae: "Unliked successfully." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 }

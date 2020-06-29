@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
 import UserController from "@controllers/UserController";
+import checkJWT from "../validations/CheckJWT";
 
 const userRoutes = Router();
 const userController = new UserController();
@@ -28,6 +29,7 @@ userRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       userId: Joi.number().min(1).required(),
@@ -43,6 +45,7 @@ userRoutes.put(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       firstname: Joi.string().min(3).required(),

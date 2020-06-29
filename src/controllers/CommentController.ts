@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
+import AppError from "../AppError";
 
 require("dotenv/config");
 
@@ -14,40 +14,30 @@ interface IComment {
   date: string;
 }
 
-interface IToken {
-  data: {
-    id: number;
-  };
-}
-
 class CommentController {
-  create = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  create = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { message, postId } = request.body;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+      const post = await knex("posts").where("id", postId).first();
+      if (!post)
+        throw new AppError("Post not found, so you cannot comment it.");
+
       const dataComment = {
         message,
-        user_id: decodedToken.data.id,
+        user_id: id,
         post_id: postId,
       };
 
-      const post = await knex("posts").where("id", postId).first();
-
-      if (!post) {
-        return response
-          .status(400)
-          .json({ message: "Post not found, so you cannot comment it." });
-      }
-
       await knex("comment").insert(dataComment);
-      return response.json({ success: true });
+      return response.json({ message: "Comment created." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token" });
+      next(error);
     }
   };
 
@@ -95,54 +85,58 @@ class CommentController {
     return response.json(comment);
   };
 
-  update = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  update = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { commentId } = request.params;
     const { message } = request.body;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
       const comment: IComment = await knex("comment")
         .where("id", commentId)
         .first();
 
-      if (comment.user_id !== decodedToken.data.id) {
-        return response.status(400).json({
-          message: "This comment is not yours, so you cannot update it.",
-        });
+      if (!comment) throw new AppError("This comment does not exist.");
+
+      if (comment.user_id !== id) {
+        throw new AppError(
+          "This comment is not yours, so you cannot update it."
+        );
       }
 
       await knex("comment")
         .where("id", commentId)
-        .andWhere("user_id", decodedToken.data.id)
+        .andWhere("user_id", id)
         .update({ message });
-      return response.json({ success: true });
+      return response.json({ message: "Comment updated." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 
-  delete = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  delete = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id } = response.locals.user.data;
     const { commentId } = request.params;
     const trx = await knex.transaction();
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
       const commentDel: IComment = await trx("comment")
         .where("id", commentId)
         .first();
 
-      if (commentDel.user_id !== decodedToken.data.id) {
-        return response.status(400).json({
-          message: "This comment is not yours, so you cannot delete it",
-        });
+      if (!commentDel) throw new AppError("This comment does not exist.");
+
+      if (commentDel.user_id !== id) {
+        throw new AppError(
+          "This comment is not yours, so you cannot delete it"
+        );
       }
 
       await trx("comment_like").where("comment_id", commentId).del();
@@ -150,9 +144,9 @@ class CommentController {
       await trx("comment").where("id", commentId).del();
 
       trx.commit();
-      return response.json({ success: true });
+      return response.json({ message: "Comment deleted." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token" });
+      next(error);
     }
   };
 }

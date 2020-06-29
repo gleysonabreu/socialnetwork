@@ -1,14 +1,6 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
-
-require("dotenv/config");
-
-interface IToken {
-  data: {
-    id: number;
-  };
-}
+import AppError from "../AppError";
 
 interface IPost {
   id: number;
@@ -18,28 +10,21 @@ interface IPost {
 class UploadController {
   addPhotoPost = async (
     request: Request,
-    response: Response
+    response: Response,
+    next: NextFunction
   ): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+    const { id: idUser } = response.locals.user.data;
     const { key, location: url = "" } = request.file;
     const { postId } = request.params;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
-
       const post: IPost = await knex("posts")
         .where("id", postId)
-        .andWhere("user_id", decodedToken.data.id)
+        .andWhere("user_id", idUser)
         .first();
 
-      if (!post) {
-        return response.status(400).json({
-          message: "This post is not yours, so you cannot add files.",
-        });
-      }
+      if (!post)
+        throw new AppError("This post is not yours, so you cannot add files.");
 
       const dataImage = {
         url: url || key,
@@ -47,9 +32,9 @@ class UploadController {
       };
 
       await knex("post_image").insert(dataImage);
-      return response.json({ success: true });
+      return response.json({ message: "Image added." });
     } catch (error) {
-      return response.json({ message: "Invalid token." });
+      next(error);
     }
   };
 
@@ -57,23 +42,15 @@ class UploadController {
     request: Request,
     response: Response
   ): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+    const { id: idUser } = response.locals.user.data;
     const { key, location: url } = request.file;
 
-    try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
-      const updatePic = {
-        photo: url || key,
-      };
+    const updatePic = {
+      photo: url || key,
+    };
 
-      await knex("users").where("id", decodedToken.data.id).update(updatePic);
-      return response.json({ success: true });
-    } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
-    }
+    await knex("users").where("id", idUser).update(updatePic);
+    return response.json({ message: "Photo updated." });
   };
 }
 

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
 import FollowerController from "@controllers/FollowerController";
+import checkJWT from "../validations/CheckJWT";
 
 const followerRoutes = Router();
 const followerController = new FollowerController();
@@ -12,6 +13,7 @@ followerRoutes.post(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       userFollowing: Joi.number().required(),
@@ -26,6 +28,7 @@ followerRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       userFollower: Joi.number().required(),
@@ -40,6 +43,7 @@ followerRoutes.delete(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       userFollowing: Joi.number().required(),

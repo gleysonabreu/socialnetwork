@@ -1,8 +1,6 @@
-import { Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
-
-require("dotenv/config");
+import AppError from "../AppError";
 
 interface IPost {
   id: number;
@@ -19,183 +17,155 @@ interface IUser {
   photo: string;
 }
 
-interface IToken {
-  data: {
-    id: number;
-  };
-}
-
 class PostController {
   create = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+    const { id } = response.locals.user.data;
     const { message } = request.body;
 
-    try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+    const dataPost = {
+      message,
+      user_id: id,
+    };
 
-      const dataPost = {
-        message,
-        user_id: decodedToken.data.id,
-      };
+    await knex("posts").insert(dataPost);
 
-      await knex("posts").insert(dataPost);
-
-      return response.json({ success: true });
-    } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
-    }
+    return response.json({ message: "Post done." });
   };
 
   index = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+    const { id } = response.locals.user.data;
 
-    try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
+    const posts = await knex("posts")
+      .innerJoin("users", function postUser() {
+        this.on("posts.user_id", "=", "users.id");
+      })
+      .leftJoin("post_image", function images() {
+        this.on("posts.id", "post_image.post_id");
+      })
+      .whereIn("posts.user_id", function postUserIn() {
+        this.select("user_following")
+          .from("followers")
+          .where("user_follower", id);
+      })
+      .select(
+        "posts.id",
+        "posts.message",
+        "posts.date",
+        "users.id as user_id",
+        "users.firstname",
+        "users.lastname",
+        "users.username",
+        "users.photo",
+        knex.raw("string_agg(post_image.url, ',') as images")
+      )
+      .groupBy(
+        "posts.id",
+        "posts.message",
+        "posts.date",
+        "users.id",
+        "users.firstname",
+        "users.lastname",
+        "users.username",
+        "users.photo"
+      )
+      .orderBy("posts.id", "desc");
 
-      const posts = await knex("posts")
-        .innerJoin("users", function postUser() {
-          this.on("posts.user_id", "=", "users.id");
-        })
-        .leftJoin("post_image", function images() {
-          this.on("posts.id", "post_image.post_id");
-        })
-        .whereIn("posts.user_id", function postUserIn() {
-          this.select("user_following")
-            .from("followers")
-            .where("user_follower", decodedToken.data.id);
-        })
-        .select(
-          "posts.id",
-          "posts.message",
-          "posts.date",
-          "users.id as user_id",
-          "users.firstname",
-          "users.lastname",
-          "users.username",
-          "users.photo",
-          knex.raw("string_agg(post_image.url, ',') as images")
-        )
-        .groupBy(
-          "posts.id",
-          "posts.message",
-          "posts.date",
-          "users.id",
-          "users.firstname",
-          "users.lastname",
-          "users.username",
-          "users.photo"
-        )
-        .orderBy("posts.id", "desc");
-
-      return response.json(posts);
-    } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
-    }
+    return response.json(posts);
   };
 
   show = async (request: Request, response: Response): Promise<Response> => {
     const { id } = request.params;
 
-    try {
-      const post = await knex("posts")
-        .select(
-          "posts.id",
-          "posts.message",
-          "posts.date",
-          "users.id as user_id",
-          "users.firstname",
-          "users.lastname",
-          "users.username",
-          "users.photo",
-          knex.raw("string_agg(post_image.url, ',') as images")
-        )
-        .innerJoin("users", function postUser() {
-          this.on("posts.user_id", "users.id");
-        })
-        .leftJoin("post_image", function images() {
-          this.on("posts.id", "post_image.post_id");
-        })
-        .where("posts.id", "=", id)
-        .groupBy(
-          "posts.id",
-          "posts.message",
-          "posts.date",
-          "users.firstname",
-          "users.lastname",
-          "users.username",
-          "users.photo",
-          "users.id"
-        )
-        .first();
+    const post = await knex("posts")
+      .select(
+        "posts.id",
+        "posts.message",
+        "posts.date",
+        "users.id as user_id",
+        "users.firstname",
+        "users.lastname",
+        "users.username",
+        "users.photo",
+        knex.raw("string_agg(post_image.url, ',') as images")
+      )
+      .innerJoin("users", function postUser() {
+        this.on("posts.user_id", "users.id");
+      })
+      .leftJoin("post_image", function images() {
+        this.on("posts.id", "post_image.post_id");
+      })
+      .where("posts.id", "=", id)
+      .groupBy(
+        "posts.id",
+        "posts.message",
+        "posts.date",
+        "users.firstname",
+        "users.lastname",
+        "users.username",
+        "users.photo",
+        "users.id"
+      )
+      .first();
 
-      return response.json(post);
-    } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
-    }
+    return response.json(post);
   };
 
-  update = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  update = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id: idUser } = response.locals.user.data;
     const { id } = request.params;
     const { message } = request.body;
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
       const post: IPost = await knex("posts").where("id", id).first();
-      if (decodedToken.data.id !== post.user_id) {
-        return response
-          .status(400)
-          .json({ message: "This post is not your, so you cannot update." });
-      }
+
+      if (!post) throw new AppError("This post does not exist.");
+
+      if (idUser !== post.user_id)
+        throw new AppError("This post is not your, so you cannot update.");
+
       await knex("posts").where("id", "=", id).update({ message });
       return response.json({ message: "Updated post." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token." });
+      next(error);
     }
   };
 
-  delete = async (request: Request, response: Response): Promise<Response> => {
-    const { authorization } = request.headers;
-    const tokenAuth = authorization.split(" ")[1];
+  delete = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
+    const { id: idUser } = response.locals.user.data;
     const { id } = request.params;
     const trx = await knex.transaction();
 
     try {
-      const decodedToken = <IToken>(
-        jwt.verify(tokenAuth, process.env.SECRET_KEY)
-      );
       const post: IPost = await trx("posts").where("id", "=", id).first();
-      if (post.user_id === decodedToken.data.id) {
-        await trx("comment_like")
-          .whereIn("comment_id", function wI() {
-            this.select("id").from("comment").where("post_id", "=", post.id);
-          })
-          .del();
 
-        await trx("comment").where("post_id", "=", post.id).del();
+      if (!post) throw new AppError("This post does not exist.");
 
-        await trx("post_image").where("post_id", "=", post.id).del();
+      if (post.user_id !== idUser)
+        throw new AppError("This post is not yours, so you cannot delete it.");
 
-        await trx("post_like").where("post_id", "=", post.id).del();
+      await trx("comment_like")
+        .whereIn("comment_id", function wI() {
+          this.select("id").from("comment").where("post_id", "=", post.id);
+        })
+        .del();
 
-        await trx("posts").where("id", "=", post.id).del();
-        trx.commit();
-        return response.json({ message: "Post deleted." });
-      }
-      return response
-        .status(400)
-        .json({ message: "This post is not yours, so you cannot delete it." });
+      await trx("comment").where("post_id", "=", post.id).del();
+      await trx("post_image").where("post_id", "=", post.id).del();
+      await trx("post_like").where("post_id", "=", post.id).del();
+      await trx("posts").where("id", "=", post.id).del();
+      trx.commit();
+
+      return response.json({ message: "Post deleted." });
     } catch (error) {
-      return response.status(400).json({ message: "Invalid token" });
+      next(error);
     }
   };
 }

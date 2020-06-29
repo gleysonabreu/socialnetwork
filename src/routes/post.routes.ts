@@ -2,6 +2,7 @@ import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
 import PostController from "@controllers/PostController";
 import PostLikeController from "@controllers/PostLikeController";
+import checkJWT from "../validations/CheckJWT";
 
 const postRoutes = Router();
 const postController = new PostController();
@@ -14,6 +15,7 @@ postRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   postController.index
 );
 postRoutes.post(
@@ -23,6 +25,7 @@ postRoutes.post(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       message: Joi.string().required(),
@@ -37,6 +40,7 @@ postRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.number().required(),
@@ -51,6 +55,7 @@ postRoutes.put(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.number().required(),
@@ -70,6 +75,7 @@ postRoutes.delete(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.number().required(),
@@ -85,6 +91,7 @@ postRoutes.post(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       postId: Joi.number().required(),
@@ -99,6 +106,7 @@ postRoutes.get(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
@@ -113,6 +121,7 @@ postRoutes.delete(
       authorization: Joi.string().required(),
     }).unknown(),
   }),
+  checkJWT,
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
