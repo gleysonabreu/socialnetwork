@@ -2,6 +2,8 @@ import { Router } from "express";
 import { celebrate, Segments, Joi } from "celebrate";
 import PostController from "@controllers/PostController";
 import PostLikeController from "@controllers/PostLikeController";
+import multer from "multer";
+import multerConfig from "@config/multer";
 import checkJWT from "../validations/CheckJWT";
 
 const postRoutes = Router();
@@ -26,6 +28,7 @@ postRoutes.post(
     }).unknown(),
   }),
   checkJWT,
+  multer(multerConfig).array("files[]"),
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       message: Joi.string().required(),

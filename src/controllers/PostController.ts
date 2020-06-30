@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
 import AppError from "../AppError";
+import ConvertFileNames from "../utils/PostUpload";
 
 interface IPost {
   id: number;
@@ -21,15 +22,30 @@ class PostController {
   create = async (request: Request, response: Response): Promise<Response> => {
     const { id } = response.locals.user.data;
     const { message } = request.body;
+    const images = ConvertFileNames(request);
+
+    const trx = await knex.transaction();
 
     const dataPost = {
       message,
       user_id: id,
     };
 
-    await knex("posts").insert(dataPost);
+    const post = await trx("posts").returning("id").insert(dataPost);
+    const postId = post[0];
 
-    return response.json({ message: "Post done." });
+    const postImages = images.map((item: string) => {
+      return {
+        post_id: postId,
+        url: item,
+      };
+    });
+
+    await trx("post_image").insert(postImages);
+
+    await trx.commit();
+
+    return response.json({ message: "Post done" });
   };
 
   index = async (request: Request, response: Response): Promise<Response> => {
