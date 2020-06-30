@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
 import IPost from "@dtos/IPost";
+import IPostUser from "@dtos/IPostUser";
 import AppError from "../AppError";
 import ConvertFileNames from "../utils/PostUpload";
 import ImageLink from "../utils/ImageLink";
@@ -76,6 +77,7 @@ class PostController {
     const serializable = posts.map((post) => {
       return {
         ...post,
+        photo: `http://localhost:3333/temp/uploads/${post.photo}`,
         images: post.images ? ImageLink(post.images) : null,
       };
     });
@@ -86,7 +88,7 @@ class PostController {
   show = async (request: Request, response: Response): Promise<Response> => {
     const { id } = request.params;
 
-    const post: IPost = await knex("posts")
+    const post: IPostUser = await knex("posts")
       .select(
         "posts.id",
         "posts.message",
@@ -120,6 +122,7 @@ class PostController {
     const imagesLinks = post.images ? ImageLink(post.images) : null;
     const serializable = {
       ...post,
+      photo: `http://localhost:3333/temp/uploads/${post.photo}`,
       images: imagesLinks,
     };
 

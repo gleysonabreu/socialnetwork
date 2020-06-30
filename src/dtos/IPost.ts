@@ -1,5 +1,5 @@
 export default interface IPost {
-  id: number;
+  id?: number;
   message: string;
   // eslint-disable-next-line camelcase
   user_id: number;

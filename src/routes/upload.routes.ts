@@ -9,18 +9,6 @@ const uploadRoutes = Router();
 const uploadController = new UploadController();
 
 uploadRoutes.post(
-  "/uploads/post/:postId",
-  celebrate({
-    [Segments.HEADERS]: Joi.object({
-      authorization: Joi.string().required(),
-    }).unknown(),
-  }),
-  checkJWT,
-  multer(multerConfig).single("file"),
-  uploadController.addPhotoPost
-);
-
-uploadRoutes.post(
   "/uploads/user",
   celebrate({
     [Segments.HEADERS]: Joi.object({
