@@ -1,19 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
 import bcrypt from "bcrypt";
+import IUser from "@dtos/IUser";
 import AppError from "../AppError";
-
-interface IUser {
-  id?: number;
-  firstname: string;
-  lastname: string;
-  username: string;
-  email: string;
-  password?: string;
-  photo?: string;
-  // eslint-disable-next-line camelcase
-  date_birth?: string;
-}
 
 class UserController {
   create = async (request: Request, response: Response): Promise<any> => {

@@ -3,16 +3,9 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import knex from "@database/connection";
 import bcrypt from "bcrypt";
+import IUser from "@dtos/IUser";
 
 require("dotenv/config");
-
-interface IUser {
-  id: number;
-  firstname: string;
-  lastname: string;
-  username: string;
-  password: string;
-}
 
 class SessionController {
   create = async (request: Request, response: Response): Promise<Response> => {

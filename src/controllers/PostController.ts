@@ -1,22 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
+import IPost from "@dtos/IPost";
 import AppError from "../AppError";
 import ConvertFileNames from "../utils/PostUpload";
-
-interface IPost {
-  id: number;
-  message: string;
-  // eslint-disable-next-line camelcase
-  user_id: number;
-}
-
-interface IUser {
-  id: number;
-  firstname: string;
-  lastname: string;
-  username: string;
-  photo: string;
-}
+import ImageLink from "../utils/ImageLink";
 
 class PostController {
   create = async (request: Request, response: Response): Promise<Response> => {
@@ -86,13 +73,20 @@ class PostController {
       )
       .orderBy("posts.id", "desc");
 
-    return response.json(posts);
+    const serializable = posts.map((post) => {
+      return {
+        ...post,
+        images: post.images ? ImageLink(post.images) : null,
+      };
+    });
+
+    return response.json(serializable);
   };
 
   show = async (request: Request, response: Response): Promise<Response> => {
     const { id } = request.params;
 
-    const post = await knex("posts")
+    const post: IPost = await knex("posts")
       .select(
         "posts.id",
         "posts.message",
@@ -123,7 +117,13 @@ class PostController {
       )
       .first();
 
-    return response.json(post);
+    const imagesLinks = post.images ? ImageLink(post.images) : null;
+    const serializable = {
+      ...post,
+      images: imagesLinks,
+    };
+
+    return response.json(serializable);
   };
 
   update = async (

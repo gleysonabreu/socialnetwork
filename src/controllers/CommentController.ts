@@ -1,18 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import knex from "@database/connection";
+import IComment from "@dtos/IComment";
 import AppError from "../AppError";
 
 require("dotenv/config");
-
-interface IComment {
-  id: number;
-  message: string;
-  // eslint-disable-next-line camelcase
-  user_id: number;
-  // eslint-disable-next-line camelcase
-  post_id: number;
-  date: string;
-}
 
 class CommentController {
   create = async (

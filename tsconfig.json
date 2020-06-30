@@ -22,7 +22,8 @@
       "@controllers/*": ["./src/controllers/*"],
       "@database/*": ["./src/database/*"],
       "@config/*": ["./src/configs/*"],
-      "@routes/*": ["./src/routes/*"]
+      "@routes/*": ["./src/routes/*"],
+      "@dtos/*": ["./src/dtos/*"]
     }
   }
 }
