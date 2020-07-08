@@ -7,7 +7,7 @@ const followerRoutes = Router();
 const followerController = new FollowerController();
 
 followerRoutes.post(
-  "/followers/:userFollowing",
+  "/:userFollowing",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -22,7 +22,7 @@ followerRoutes.post(
   followerController.create
 );
 followerRoutes.get(
-  "/followers/:userFollower",
+  "/:userFollower",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -37,7 +37,7 @@ followerRoutes.get(
   followerController.index
 );
 followerRoutes.delete(
-  "/followers/:userFollowing",
+  "/:userFollowing",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),

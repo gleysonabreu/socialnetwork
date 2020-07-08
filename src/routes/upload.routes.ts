@@ -9,7 +9,7 @@ const uploadRoutes = Router();
 const uploadController = new UploadController();
 
 uploadRoutes.post(
-  "/uploads/user",
+  "/user",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),

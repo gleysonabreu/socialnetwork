@@ -11,7 +11,7 @@ const postController = new PostController();
 const postLikeController = new PostLikeController();
 
 postRoutes.get(
-  "/post",
+  "/",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -21,7 +21,7 @@ postRoutes.get(
   postController.index
 );
 postRoutes.post(
-  "/post",
+  "/",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -37,7 +37,7 @@ postRoutes.post(
   postController.create
 );
 postRoutes.get(
-  "/post/:id",
+  "/:id",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -52,7 +52,7 @@ postRoutes.get(
   postController.show
 );
 postRoutes.put(
-  "/post/:id",
+  "/:id",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -72,7 +72,7 @@ postRoutes.put(
   postController.update
 );
 postRoutes.delete(
-  "/post/:id",
+  "/:id",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -88,7 +88,7 @@ postRoutes.delete(
 );
 
 postRoutes.post(
-  "/post/like",
+  "/like/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -96,14 +96,14 @@ postRoutes.post(
   }),
   checkJWT,
   celebrate({
-    [Segments.BODY]: Joi.object().keys({
+    [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
     }),
   }),
   postLikeController.create
 );
 postRoutes.get(
-  "/post/like/:postId",
+  "/like/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -118,7 +118,7 @@ postRoutes.get(
   postLikeController.index
 );
 postRoutes.delete(
-  "/post/like/:postId",
+  "/like/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),

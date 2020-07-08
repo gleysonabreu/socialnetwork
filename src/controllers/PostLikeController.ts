@@ -9,7 +9,7 @@ class PostLikeController {
     next: NextFunction
   ): Promise<Response> => {
     const { id: idUser } = response.locals.user.data;
-    const { postId } = request.body;
+    const { postId } = request.params;
 
     try {
       const post = await knex("posts").where("id", postId).first();

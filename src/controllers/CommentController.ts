@@ -12,7 +12,8 @@ class CommentController {
     next: NextFunction
   ): Promise<Response> => {
     const { id } = response.locals.user.data;
-    const { message, postId } = request.body;
+    const { postId } = request.params;
+    const { message } = request.body;
 
     try {
       const post = await knex("posts").where("id", postId).first();
@@ -54,13 +55,12 @@ class CommentController {
   };
 
   show = async (request: Request, response: Response): Promise<Response> => {
-    const { postId, commentId } = request.params;
+    const { commentId } = request.params;
     const comment = await knex("comment")
       .innerJoin("users", function commentUsers() {
         this.on("comment.user_id", "users.id");
       })
-      .where("comment.post_id", postId)
-      .andWhere("comment.id", commentId)
+      .where("comment.id", commentId)
       .select(
         "comment.id",
         "comment.message",

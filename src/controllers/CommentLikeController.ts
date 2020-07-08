@@ -9,7 +9,7 @@ class CommentLikeController {
     next: NextFunction
   ): Promise<Response> => {
     const { id } = response.locals.user.data;
-    const { commentId } = request.body;
+    const { commentId } = request.params;
 
     try {
       const comment = await knex("comment").where("id", commentId).first();

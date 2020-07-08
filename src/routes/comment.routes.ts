@@ -9,7 +9,7 @@ const commentController = new CommentController();
 const commentLikeController = new CommentLikeController();
 
 commentRoutes.get(
-  "/comment/:postId",
+  "/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -24,23 +24,7 @@ commentRoutes.get(
   commentController.index
 );
 commentRoutes.post(
-  "/comment",
-  celebrate({
-    [Segments.HEADERS]: Joi.object({
-      authorization: Joi.string().required(),
-    }).unknown(),
-  }),
-  checkJWT,
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      message: Joi.string().required(),
-      postId: Joi.number().required(),
-    }),
-  }),
-  commentController.create
-);
-commentRoutes.get(
-  "/comment/:postId/:commentId",
+  "/:postId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -50,13 +34,32 @@ commentRoutes.get(
   celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       postId: Joi.number().required(),
+    }),
+  }),
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      message: Joi.string().required(),
+    }),
+  }),
+  commentController.create
+);
+commentRoutes.get(
+  "/single/:commentId",
+  celebrate({
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required(),
+    }).unknown(),
+  }),
+  checkJWT,
+  celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),
     }),
   }),
   commentController.show
 );
 commentRoutes.put(
-  "/comment/:commentId",
+  "/:commentId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -76,7 +79,7 @@ commentRoutes.put(
   commentController.update
 );
 commentRoutes.delete(
-  "/comment/:commentId",
+  "/:commentId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -92,7 +95,7 @@ commentRoutes.delete(
 );
 
 commentRoutes.post(
-  "/comment/like",
+  "/like/:commentId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -100,14 +103,14 @@ commentRoutes.post(
   }),
   checkJWT,
   celebrate({
-    [Segments.BODY]: Joi.object().keys({
+    [Segments.PARAMS]: Joi.object().keys({
       commentId: Joi.number().required(),
     }),
   }),
   commentLikeController.create
 );
 commentRoutes.get(
-  "/comment/like/listall/:commentId",
+  "/like/:commentId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -122,7 +125,7 @@ commentRoutes.get(
   commentLikeController.index
 );
 commentRoutes.delete(
-  "/comment/like/delete/:commentId",
+  "/like/:commentId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
