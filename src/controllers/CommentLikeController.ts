@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import knex from "@database/connection";
 import AppError from "../AppError";
 
@@ -10,7 +9,7 @@ class CommentLikeController {
     next: NextFunction
   ): Promise<Response> => {
     const { id } = response.locals.user.data;
-    const { commentId } = request.body;
+    const { commentId } = request.params;
 
     try {
       const comment = await knex("comment").where("id", commentId).first();

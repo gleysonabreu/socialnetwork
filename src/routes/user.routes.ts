@@ -8,7 +8,7 @@ const userController = new UserController();
 
 // User userRoutes
 userRoutes.post(
-  "/users",
+  "/",
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       firstname: Joi.string().min(3).required(),
@@ -23,7 +23,7 @@ userRoutes.post(
 );
 
 userRoutes.get(
-  "/users/:userId",
+  "/:userId",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),
@@ -39,7 +39,7 @@ userRoutes.get(
 );
 
 userRoutes.put(
-  "/users",
+  "/",
   celebrate({
     [Segments.HEADERS]: Joi.object({
       authorization: Joi.string().required(),

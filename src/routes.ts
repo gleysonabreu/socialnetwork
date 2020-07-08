@@ -8,11 +8,11 @@ import followersRoutes from "@routes/followers.routes";
 
 const routes = express();
 
-routes.use(postRoutes);
-routes.use(commentRoutes);
-routes.use(followersRoutes);
-routes.use(userRoutes);
-routes.use(sessionRoutes);
-routes.use(uploadRoutes);
+routes.use("/post", postRoutes);
+routes.use("/comment", commentRoutes);
+routes.use("/followers", followersRoutes);
+routes.use("/users", userRoutes);
+routes.use("/session", sessionRoutes);
+routes.use("/uploads", uploadRoutes);
 
 export default routes;

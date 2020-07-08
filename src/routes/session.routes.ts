@@ -6,7 +6,7 @@ const sessionRoutes = Router();
 const sessionController = new SessionController();
 
 sessionRoutes.post(
-  "/session",
+  "/",
   celebrate({
     [Segments.BODY]: Joi.object().keys({
       login: Joi.string().required(),
