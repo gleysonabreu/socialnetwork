@@ -85,48 +85,58 @@ class PostController {
     return response.json(serializable);
   };
 
-  show = async (request: Request, response: Response): Promise<Response> => {
+  show = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<Response> => {
     const { id } = request.params;
 
-    const post: IPostUser = await knex("posts")
-      .select(
-        "posts.id",
-        "posts.message",
-        "posts.date",
-        "users.id as user_id",
-        "users.firstname",
-        "users.lastname",
-        "users.username",
-        "users.photo",
-        knex.raw("string_agg(post_image.url, ',') as images")
-      )
-      .innerJoin("users", function postUser() {
-        this.on("posts.user_id", "users.id");
-      })
-      .leftJoin("post_image", function images() {
-        this.on("posts.id", "post_image.post_id");
-      })
-      .where("posts.id", "=", id)
-      .groupBy(
-        "posts.id",
-        "posts.message",
-        "posts.date",
-        "users.firstname",
-        "users.lastname",
-        "users.username",
-        "users.photo",
-        "users.id"
-      )
-      .first();
+    try {
+      const post: IPostUser = await knex("posts")
+        .select(
+          "posts.id",
+          "posts.message",
+          "posts.date",
+          "users.id as user_id",
+          "users.firstname",
+          "users.lastname",
+          "users.username",
+          "users.photo",
+          knex.raw("string_agg(post_image.url, ',') as images")
+        )
+        .innerJoin("users", function postUser() {
+          this.on("posts.user_id", "users.id");
+        })
+        .leftJoin("post_image", function images() {
+          this.on("posts.id", "post_image.post_id");
+        })
+        .where("posts.id", "=", id)
+        .groupBy(
+          "posts.id",
+          "posts.message",
+          "posts.date",
+          "users.firstname",
+          "users.lastname",
+          "users.username",
+          "users.photo",
+          "users.id"
+        )
+        .first();
 
-    const imagesLinks = post.images ? ImageLink(post.images) : null;
-    const serializable = {
-      ...post,
-      photo: `http://localhost:3333/temp/uploads/${post.photo}`,
-      images: imagesLinks,
-    };
+      if (!post) throw new AppError("This posts does not exist.");
 
-    return response.json(serializable);
+      const imagesLinks = post.images ? ImageLink(post.images) : null;
+      const serializable = {
+        ...post,
+        photo: `http://localhost:3333/temp/uploads/${post.photo}`,
+        images: imagesLinks,
+      };
+
+      return response.json(serializable);
+    } catch (error) {
+      next(error);
+    }
   };
 
   update = async (
