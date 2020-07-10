@@ -13,7 +13,7 @@ Click the button below to import all routes to your Insomnia.
 <a  href="https://insomnia.rest/run/?label=SocialNetwork&uri=https%3A%2F%2Fgist.githubusercontent.com%2Fgleysonabreu%2F6dfde7ab6f7bad5c3d5f25556bb04a3e%2Fraw%2F8cf4685c8a45055ecbedd503cf579aff32c4d1fb%2FInsomnia_2020-07-08.har"  target="_blank"><img  src="https://insomnia.rest/images/run.svg"  alt="Run in Insomnia"></a>
 </p>
 
-## PRE REQUISITES 
+## PREREQUISITES 
 
 1. It's necessary you have installed the [Node.js](https://nodejs.org/en/)
 2. Use a package manager of your choice ([NPM](https://www.npmjs.com/), [YARN](https://yarnpkg.com/), etc.) in order to install all dependencies
@@ -41,3 +41,9 @@ Click the button below to import all routes to your Insomnia.
 5. Use this command yarn/npm knex:migrate to create all tables in the database.
 6. Use yarn/npm build to generate a build production.
 7. Use yarn/npm dev to start the server.
+
+## IMAGENS
+1. Insomnia
+![Insomnia](https://i.imgur.com/wiTNH7g.png)
+2. SERVER
+![Server](https://i.imgur.com/QaUXXhY.png)
