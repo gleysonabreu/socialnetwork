@@ -21,17 +21,23 @@ Click the button below to import all routes to your Insomnia.
 ## INSTALLATION
 
 1. Using the git clone to download the files.
-    ```git clone https://github.com/gleysonabreu/socialnetwork.git```
+    ```
+    git clone https://github.com/gleysonabreu/socialnetwork.git
+    ```
 2. Using npm or yarn to install all dependencies.
-    ```npm install
-    yarn install```
+    ```
+    npm install
+    yarn install
+    ```
 3. Create file .env with:
-    ```PORT=3333 <- DEFAULT
+    ```
+    PORT=3333 <- DEFAULT
     PG_CONNECTION= <- URL CONNECTION WITH YOUR POSTGRES
     SECRET_KEY= <- SECRET KEY TO CREATE A SESSION's
     AWS_ACCESS_KEY_ID= <- AMAZON AWS TO SEND FILES FOR SERVER.
     AWS_SECRET_ACCESS_KEY= <- AMAZON AWS TO SEND FILES FOR SERVER.
-    AWS_DEFAULT_REGION= <- AMAZON AWS TO SEND FILES FOR SERVER.```
+    AWS_DEFAULT_REGION= <- AMAZON AWS TO SEND FILES FOR SERVER.
+    ```
 5. Use this command yarn/npm knex:migrate to create all tables in the database.
 6. Use yarn/npm build to generate a build production.
 7. Use yarn/npm dev to start the server.
